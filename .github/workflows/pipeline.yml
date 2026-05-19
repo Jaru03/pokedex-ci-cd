@@ -9,8 +9,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  install:
-    name: Instalar Dependencias
+  lint:
+    name: Linter
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v6
@@ -18,9 +18,45 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-node@v6
         with:
+          cache: pnpm
           node-version: 24
       - run: corepack enable
       - run: corepack prepare pnpm@latest --activate
-
       - run: pnpm install --frozen-lockfile
-    
+      - run: pnpm lint
+
+  test: 
+    name: Tests
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v6
+        with:
+          cache: pnpm
+          node-version: 24
+      - run: corepack enable
+      - run: corepack prepare pnpm@latest --activate
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm test
+
+  typecheck: 
+    name: Healthcheck
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v6
+        with:
+          cache: pnpm
+          node-version: 24
+      - run: corepack enable
+      - run: corepack prepare pnpm@latest --activate
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+
+  
+  
+  
