@@ -63,6 +63,25 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm typecheck
 
+  build:
+    needs: [typecheck, test, lint]
+    name: Build
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 11
+          cache: true
+      - uses: actions/setup-node@v6
+        with:
+          cache: pnpm
+          node-version: 22.13
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+
   
   
   
