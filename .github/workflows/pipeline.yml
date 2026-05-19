@@ -23,7 +23,7 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           cache: pnpm
-          node-version: 20
+          node-version: 22.13
       - run: pnpm install --frozen-lockfile
       - run: pnpm lint
 
@@ -41,7 +41,7 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           cache: pnpm
-          node-version: 20
+          node-version: 22.13
       - run: pnpm install --frozen-lockfile
       - run: pnpm test
 
@@ -59,7 +59,7 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           cache: pnpm
-          node-version: 20
+          node-version: 22.13
       - run: pnpm install --frozen-lockfile
       - run: pnpm typecheck
 
