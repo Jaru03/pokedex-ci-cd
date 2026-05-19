@@ -22,7 +22,7 @@ ENV NODE_ENV=production
 
 RUN addgroup -S nodejs && adduser -S nextjs -G nodejs
 
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone/app/ ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 
