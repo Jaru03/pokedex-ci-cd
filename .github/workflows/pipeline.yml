@@ -8,6 +8,10 @@ concurrency:
   group: ci-${{github.ref}}
   cancel-in-progress: true
 
+permissions: 
+  contents: read
+  packages: write
+
 jobs:
   lint:
     name: Linter
