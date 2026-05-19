@@ -19,9 +19,11 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           cache: pnpm
-          node-version: 24
-      - run: corepack enable
-      - run: corepack prepare pnpm@latest --activate
+          node-version: 20
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 11
+          cache: true
       - run: pnpm install --frozen-lockfile
       - run: pnpm lint
 
@@ -35,9 +37,11 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           cache: pnpm
-          node-version: 24
-      - run: corepack enable
-      - run: corepack prepare pnpm@latest --activate
+          node-version: 20
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 11
+          cache: true
       - run: pnpm install --frozen-lockfile
       - run: pnpm test
 
@@ -51,9 +55,11 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           cache: pnpm
-          node-version: 24
-      - run: corepack enable
-      - run: corepack prepare pnpm@latest --activate
+          node-version: 20
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 11
+          cache: true
       - run: pnpm install --frozen-lockfile
       - run: pnpm typecheck
 
