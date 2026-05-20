@@ -1,36 +1,78 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Pokedex CI/CD
 
-## Getting Started
+A Next.js Pokedex app built as a hands-on practice project for CI/CD with GitHub Actions, Docker, and VPS deployment.
 
-First, run the development server:
+## Purpose
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+This project is not focused on the app itself — it exists to practice a real-world deployment pipeline:
+
+- **CI with GitHub Actions** — automated lint, typecheck, test, and build on every push to `main`
+- **Docker** — multi-stage image build published to GitHub Container Registry (GHCR)
+- **CD to a VPS** — SSH-based deployment that pulls the latest image and restarts the container via Docker Compose
+
+## Pipeline
+
+```
+push to main
+    │
+    ├── lint
+    ├── test
+    └── typecheck
+          │
+          └── build
+                │
+                └── docker build & push → ghcr.io/jaru03/pokedex-ci-cd
+                          │
+                          └── SSH into VPS → docker compose pull && up -d
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Each stage depends on the previous one. If lint, tests, or typecheck fail, the image is never built and the deploy never runs.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Tech stack
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Layer       | Tool                          |
+|-------------|-------------------------------|
+| Framework   | Next.js 16 (App Router)       |
+| Language    | TypeScript                    |
+| Styling     | Tailwind CSS v4               |
+| Package mgr | pnpm 11                       |
+| Testing     | Jest                          |
+| Container   | Docker (multi-stage, Alpine)  |
+| Registry    | GitHub Container Registry     |
+| CI/CD       | GitHub Actions                |
+| Hosting     | VPS via SSH + Docker Compose  |
+| Data        | [PokéAPI](https://pokeapi.co) |
 
-## Learn More
+## Docker image
 
-To learn more about Next.js, take a look at the following resources:
+The Dockerfile uses three stages to keep the final image small:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. **deps** — installs dependencies with `pnpm install --frozen-lockfile`
+2. **builder** — runs `pnpm build` to produce the Next.js standalone output
+3. **runner** — copies only the standalone build, static assets, and public files; runs as a non-root user
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## GitHub Actions secrets required
 
-## Deploy on Vercel
+| Secret            | Description                               |
+|-------------------|-------------------------------------------|
+| `SSH_HOST`        | VPS IP or hostname                        |
+| `SSH_USER`        | SSH username                              |
+| `SSH_PRIVATE_KEY` | Private key for SSH access                |
+| `GHCR_TOKEN`      | GitHub token to pull from GHCR on the VPS |
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Local development
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+pnpm install
+pnpm dev        # http://localhost:3000
+pnpm lint
+pnpm typecheck
+pnpm test
+```
+
+## Running with Docker locally
+
+```bash
+docker build -t pokedex .
+docker run -p 3000:3000 pokedex
+```
